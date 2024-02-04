@@ -31,6 +31,8 @@
   },
   "type": "module",
   "dependencies": {
-    "@types/node": "^20.11.16"
+    "@types/node": "^20.11.16",
+    "cache-manager": "^5.4.0",
+    "xxh3-ts": "^1.0.6"
   }
 }
