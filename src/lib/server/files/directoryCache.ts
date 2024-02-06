@@ -1,7 +1,14 @@
 import { createCache, memoryStore } from 'cache-manager';
 
+// @ts-expect-error TS reports the export is existing, but it is there!
+import { fileTypeFromFile } from 'file-type';
+
 import { XXH64 } from 'xxh3-ts';
 import { readdir } from 'fs/promises';
+import { join } from 'path';
+import { ALLOWED_MIME_TYPES } from '$env/static/private';
+
+const allowedMimesSet = new Set(ALLOWED_MIME_TYPES.split(','));
 
 const cache = createCache(memoryStore(), {
   ttl: 24 * 60 * 60 * 1000
@@ -15,6 +22,7 @@ interface DirectoryContent {
 interface DirectoryFile {
   path: string;
   type: 'file' | 'directory';
+  mime?: string;
 }
 
 async function getDirectoryContent(dirPath: string): Promise<DirectoryContent> {
@@ -31,12 +39,27 @@ async function getDirectoryContent(dirPath: string): Promise<DirectoryContent> {
 
 async function buildDirectoryContent(dirPath: string): Promise<DirectoryContent> {
   const files = await readdir(dirPath, { withFileTypes: true });
-  const dirFiles: DirectoryFile[] = files
-    .filter((filer) => filer.isDirectory() || filer.isFile())
-    .map((file) => {
-      return { path: file.name, type: file.isFile() ? 'file' : 'directory' };
-    });
-  // TODO: Find out mime type and filter only for music files
+  let dirFiles: DirectoryFile[] = await Promise.all(
+    files
+      .filter((filer) => filer.isDirectory() || filer.isFile())
+      .map(async (file) => {
+        let path = join(file.path, file.name);
+        const type = file.isFile() ? 'file' : 'directory';
+        let mime;
+        if (type === 'file') {
+          mime = await fileTypeFromFile(path);
+          if (mime) {
+            mime = mime.mime;
+          }
+        }
+        path = path.split('/').slice(1).join('/');
+        return { path, type, mime };
+      })
+  );
+  // Filter out files that are not allowed, like non audio files
+  dirFiles = dirFiles.filter((val) => {
+    return val.type === 'directory' || (val.mime && allowedMimesSet.has(val.mime));
+  });
 
   dirFiles.sort((a, b) => a.path.localeCompare(b.path));
 

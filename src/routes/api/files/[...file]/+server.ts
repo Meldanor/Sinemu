@@ -3,7 +3,7 @@ import { MUSIC_DIR } from '$env/static/private';
 import type { RequestHandler } from './$types';
 import { existsSync } from 'fs';
 import { error } from '@sveltejs/kit';
-import { getFileHash } from '$lib/files/etagCache';
+import { getFileHash } from '$lib/server/files/etagCache';
 import { readFile } from 'fs/promises';
 
 export const GET: RequestHandler = async ({ params, request }) => {

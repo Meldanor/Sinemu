@@ -3,7 +3,7 @@ import { MUSIC_DIR } from '$env/static/private';
 import type { RequestHandler } from './$types';
 import { existsSync } from 'fs';
 import { error, json } from '@sveltejs/kit';
-import { getDirectoryContent } from '$lib/files/directoryCache';
+import { getDirectoryContent } from '$lib/server/files/directoryCache';
 
 export const GET: RequestHandler = async ({ params, request }) => {
   const filePath = join(MUSIC_DIR, params.directory);

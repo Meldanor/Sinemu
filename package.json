@@ -33,6 +33,7 @@
   "dependencies": {
     "@types/node": "^20.11.16",
     "cache-manager": "^5.4.0",
+    "file-type": "^19.0.0",
     "xxh3-ts": "^1.0.6"
   }
 }
