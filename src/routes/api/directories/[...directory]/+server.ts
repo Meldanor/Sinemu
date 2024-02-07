@@ -17,9 +17,12 @@ export const GET: RequestHandler = async ({ params, request }) => {
     return new Response(null, { status: 304 });
   }
 
-  return json(directoryContent, {
-    headers: {
-      ETag: directoryContent.hash
+  return json(
+    { files: directoryContent.files },
+    {
+      headers: {
+        ETag: directoryContent.hash
+      }
     }
-  });
+  );
 };

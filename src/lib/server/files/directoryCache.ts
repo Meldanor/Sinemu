@@ -7,23 +7,13 @@ import { XXH64 } from 'xxh3-ts';
 import { readdir } from 'fs/promises';
 import { join } from 'path';
 import { ALLOWED_MIME_TYPES } from '$env/static/private';
+import type { DirectoryContent, DirectoryFile } from '$lib/interfaces/directoryFiles';
 
 const allowedMimesSet = new Set(ALLOWED_MIME_TYPES.split(','));
 
 const cache = createCache(memoryStore(), {
   ttl: 24 * 60 * 60 * 1000
 });
-
-interface DirectoryContent {
-  files: DirectoryFile[];
-  hash: string;
-}
-
-interface DirectoryFile {
-  path: string;
-  type: 'file' | 'directory';
-  mime?: string;
-}
 
 async function getDirectoryContent(dirPath: string): Promise<DirectoryContent> {
   let directoryContent = (await cache.get(dirPath)) as DirectoryContent;
