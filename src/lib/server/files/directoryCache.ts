@@ -6,7 +6,7 @@ import { fileTypeFromFile } from 'file-type';
 import { XXH64 } from 'xxh3-ts';
 import { readdir } from 'fs/promises';
 import { join } from 'path';
-import { ALLOWED_MIME_TYPES } from '$env/static/private';
+import { ALLOWED_MIME_TYPES, MUSIC_DIR } from '$env/static/private';
 import type { DirectoryContent, DirectoryFile } from '$lib/interfaces/directoryFiles';
 
 const allowedMimesSet = new Set(ALLOWED_MIME_TYPES.split(','));
@@ -20,6 +20,7 @@ async function getDirectoryContent(dirPath: string): Promise<DirectoryContent> {
   if (directoryContent) {
     return directoryContent;
   }
+  console.log(dirPath);
 
   directoryContent = await buildDirectoryContent(dirPath);
 
@@ -42,7 +43,7 @@ async function buildDirectoryContent(dirPath: string): Promise<DirectoryContent>
             mime = mime.mime;
           }
         }
-        path = path.split('/').slice(1).join('/');
+        path = path.replace(MUSIC_DIR, '');
         return { path, type, mime };
       })
   );

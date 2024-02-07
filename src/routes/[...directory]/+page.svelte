@@ -1,7 +1,10 @@
 <script lang="ts">
+  import AudioPlayer from '$lib/components/AudioPlayer.svelte';
   import type { PageData } from './$types';
 
   export let data: PageData;
+
+  let url: string;
 </script>
 
 Path: {data.path}
@@ -18,6 +21,13 @@ Path: {data.path}
 <h2>Files</h2>
 <ul>
   {#each data.files as file}
-    <li>{file.path} - {file.mime}</li>
+    <li>
+      {file.path} - {file.mime} -
+      <button on:click={() => (url = `/api/files/${file.path}`)}>Play</button>
+    </li>
   {/each}
 </ul>
+
+{#if url}
+  <AudioPlayer audioUrl={url}></AudioPlayer>
+{/if}
